@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <!-- 検索エンジンに載らない設定（リンクを知っている人だけの限定公開用） -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>NAGOYA TRIP 11.15 | 旅のしおり</title>
+  <!-- Google Fonts: ポップな英語ロゴ＆丸みのある日本語フォント -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-outer: #cfe4f7;
+      --paper-bg: #f7fbff;
+      --grid-line: rgba(45, 114, 210, 0.13);
+      --blue-main: #1d63dc;
+      --blue-dark: #103b8c;
+      --blue-light: #e3f0ff;
+      --blue-accent: #3898ff;
+      --yellow-sticky: #ffe969;
+      --orange-sticker: #ff6b4a;
+      --mint-sticker: #7ee8b7;
+      --ink-color: #1c2b45;
+      --text-muted: #5a6d8c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background-color: var(--bg-outer);
+      background-image: radial-gradient(#9ec5eb 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+      color: var(--ink-color);
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 8px 76px;
+      overflow-x: hidden;
+    }
+
+    /* リングノート本体コンテナ */
+    .notebook-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: calc(100dvh - 88px);
+      min-height: 580px;
+      max-height: 820px;
+      perspective: 1600px;
+    }
+
+    /* 左端のシルバーツインリング装飾 */
+    .binder-rings {
+      position: absolute;
+      left: -6px;
+      top: 18px;
+      bottom: 18px;
+      width: 28px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .ring-unit {
+      position: relative;
+      width: 28px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ring-hole {
+      position: absolute;
+      right: 2px;
+      width: 11px;
+      height: 11px;
+      background: #4e698a;
+      border-radius: 50%;
+      box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.45);
+    }
+
+    .ring-wire {
+      position: absolute;
+      left: 0;
+      width: 23px;
+      height: 7px;
+      background: linear-gradient(180deg, #ffffff 0%, #c8d2de 45%, #7d8b9c 85%, #e2e8f0 100%);
+      border-radius: 6px;
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 各ページの共通スタイル（アイスブルー方眼紙） */
+    .page {
+      position: absolute;
+      inset: 0;
+      margin-left: 10px;
+      background-color: var(--paper-bg);
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border-radius: 6px 18px 18px 6px;
+      border: 2px solid var(--blue-main);
+      box-shadow:
+        6px 8px 0px rgba(29, 99, 220, 0.18),
+        0 12px 28px rgba(16, 59, 140, 0.15);
+      padding: 20px 18px 24px 26px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transform-origin: left center;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+      backface-visibility: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: #a8c8f5 transparent;
+    }
+
+    .page::-webkit-scrollbar {
+      width: 4px;
+    }
+    .page::-webkit-scrollbar-thumb {
+      background: #a8c8f5;
+      border-radius: 4px;
+    }
+
+    /* 3Dページめくり状態 */
+    .page.active {
+      transform: rotateY(0deg) translateX(0);
+      opacity: 1;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .page.flipped {
+      transform: rotateY(-105deg) translateX(-10px);
+      opacity: 0;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .page.upcoming {
+      transform: rotateY(0deg) translateX(4px) scale(0.99);
+      opacity: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* コラージュ装飾パーツ */
+    .masking-tape {
+      position: absolute;
+      height: 18px;
+      background: rgba(56, 152, 255, 0.35);
+      border-left: 2px dashed rgba(255, 255, 255, 0.7);
+      border-right: 2px dashed rgba(255, 255, 255, 0.7);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .tape-yellow {
+      background: rgba(255, 233, 105, 0.78);
+    }
+
+    .checker-ribbon {
+      height: 12px;
+      width: 100%;
+      background-image:
+        linear-gradient(45deg, var(--blue-main) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--blue-main) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--blue-main) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--blue-main) 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+      opacity: 0.85;
+      border-radius: 2px;
+    }
+
+    .sticker-badge {
+      display: inline-block;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 2px solid var(--ink-color);
+      box-shadow: 2px 2px 0 var(--ink-color);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ==================== PAGE 1: 表紙 ==================== */
+    .cover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .cover-date-tag {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--blue-main);
+      background: #fff;
+      border: 1.5px solid var(--blue-main);
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+
+    .cover-hero {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid var(--blue-main);
+      border-radius: 14px;
+      padding: 20px 14px 18px;
+      margin: 12px 0 14px;
+      text-align: center;
+      box-shadow: 4px 4px 0 var(--blue-accent);
+    }
+
+    .cover-sub {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 13px;
+      color: var(--blue-accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cover-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 36px;
+      line-height: 1.05;
+      color: var(--blue-main);
+      text-shadow: 2px 2px 0 #bfe0ff;
+      transform: rotate(-2deg);
+      margin: 4px 0 10px;
+    }
+
+    .cover-jp-title {
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+      color: var(--ink-color);
+      background: var(--yellow-sticky);
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      transform: rotate(1deg);
+    }
+
+    /* 黄色いカウントダウン付箋 */
+    .countdown-sticky {
+      position: relative;
+      background: var(--yellow-sticky);
+      border: 1.5px solid #d4b82c;
+      border-radius: 4px 4px 16px 4px;
+      padding: 12px 14px;
+      margin: 14px 0;
+      box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.08);
+      transform: rotate(-0.8deg);
+    }
+
+    .countdown-label {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 12px;
+      color: #7c6500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .cd-box {
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 8px;
+      padding: 6px 2px;
+      border: 1.5px solid var(--ink-color);
+    }
+
+    .cd-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blue-main);
+      line-height: 1.1;
+    }
+
+    .cd-unit {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ink-color);
+    }
+
+    /* 集合メモ */
+    .meeting-card {
+      background: #fff;
+      border: 1.5px solid var(--blue-main);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+
+    .meeting-card strong {
+      color: var(--blue-main);
+    }
+
+    .swipe-hint {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      animation: bounceRight 1.6s infinite;
+      cursor: pointer;
+    }
+
+    @keyframes bounceRight {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
+    }
+
+    /* ==================== PAGE 2: 1日の行程 ==================== */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--blue-main);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+
+    .page-title-en {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      color: var(--blue-main);
+      letter-spacing: 0.03em;
+    }
+
+    .page-num-pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--blue-main);
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .spot-card {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid var(--blue-main);
+      border-radius: 12px;
+      padding: 12px 12px 11px;
+      box-shadow: 3px 3px 0 rgba(29, 99, 220, 0.15);
+    }
+
+    .spot-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .time-pill {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      background: var(--blue-main);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .fee-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--yellow-sticky);
+      color: var(--ink-color);
+      border: 1.5px solid var(--ink-color);
+    }
+
+    .fee-badge.free {
+      background: var(--mint-sticker);
+    }
+
+    .spot-name {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--ink-color);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .spot-memo {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+
+    .spot-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .spot-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue-main);
+      background: var(--blue-light);
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--orange-sticker);
+      color: #fff;
+      text-decoration: none;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1.5px solid var(--ink-color);
+      box-shadow: 2px 2px 0 var(--ink-color);
+      transition: transform 0.1s ease;
+    }
+
+    .map-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 var(--ink-color);
+    }
+
+    /* 電車・移動コネクター */
+    .transit-connector {
+      position: relative;
+      margin: 6px 0 6px 14px;
+      padding: 8px 11px;
+      background: #eef6ff;
+      border-left: 3px dashed var(--blue-main);
+      border-top: 1.5px solid #b8d6fa;
+      border-right: 1.5px solid #b8d6fa;
+      border-bottom: 1.5px solid #b8d6fa;
+      border-radius: 0 10px 10px 0;
+      font-size: 11.5px;
+    }
+
+    .transit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      color: var(--blue-dark);
+      margin-bottom: 3px;
+    }
+
+    .transit-detail {
+      color: #364c70;
+      line-height: 1.4;
+    }
+
+    /* ==================== PAGE 3: 寄り道・お得情報 ==================== */
+    .detour-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .detour-card {
+      background: #fff;
+      border: 2px solid var(--blue-main);
+      border-radius: 12px;
+      padding: 11px 12px;
+      position: relative;
+      box-shadow: 3px 3px 0 rgba(29, 99, 220, 0.12);
+    }
+
+    .detour-cat {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--blue-main);
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .detour-cat.cafe {
+      background: #ff7b54;
+    }
+
+    /* 晴れの日プラン アコーディオンカード */
+    .sunny-plan-card {
+      background: #fffdf0;
+      border: 2px solid #e6b800;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 3px 3px 0 rgba(230, 184, 0, 0.25);
+      transition: background-color 0.2s ease;
+    }
+
+    .sunny-toggle-header {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sunny-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ff9f1c;
+      color: var(--ink-color);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1.5px solid var(--ink-color);
+      box-shadow: 2px 2px 0 var(--ink-color);
+    }
+
+    .sunny-timeline-drawer {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sunny-plan-card.open .sunny-timeline-drawer {
+      grid-template-rows: 1fr;
+    }
+
+    .sunny-timeline-inner {
+      overflow: hidden;
+    }
+
+    .sunny-timeline-content {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px dashed #e6b800;
+    }
+
+    .sunny-sub-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      color: #8a5a00;
+      background: #fff3bf;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    /* ドニチエコきっぷ紹介バナー（3ページ目最下部） */
+    .ticket-promo {
+      position: relative;
+      background: linear-gradient(135deg, #1d63dc 0%, #2f80ed 100%);
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      border: 2px dashed #bfe0ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ticket-promo-title {
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ticket-promo-desc {
+      font-size: 11px;
+      opacity: 0.95;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .ticket-price-tag {
+      background: var(--yellow-sticky);
+      color: var(--ink-color);
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1.5px solid var(--ink-color);
+      white-space: nowrap;
+      transform: rotate(3deg);
+    }
+
+    /* ==================== 下部ナビゲーション ==================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 2px solid var(--blue-main);
+      border-radius: 999px;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 20px rgba(16, 59, 140, 0.22);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 6px;
+      border-radius: 999px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .nav-btn.active {
+      background: var(--blue-main);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(29, 99, 220, 0.35);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="notebook-wrapper" id="notebook">
+    <!-- 左端のツインリング綴じ具 -->
+    <div class="binder-rings" aria-hidden="true" id="binderRings"></div>
+
+    <!-- ==================== PAGE 1: 表紙 ==================== -->
+    <section class="page active" data-page="0">
+      <div class="masking-tape" style="width: 72px; top: -6px; left: 45px; transform: rotate(-4deg);"></div>
+      <div class="masking-tape tape-yellow" style="width: 64px; top: 8px; right: 24px; transform: rotate(6deg);"></div>
+
+      <div class="cover-header">
+        <span class="cover-date-tag">2026.11.15 (SUN)</span>
+        <span class="sticker-badge" style="background: var(--mint-sticker);">☔ RAINY DAY OK</span>
+      </div>
+
+      <div class="checker-ribbon"></div>
+
+      <div class="cover-hero">
+        <div class="cover-sub">24/7 FUN GUIDEBOOK</div>
+        <h1 class="cover-title">NAGOYA<br>DAY TRIP</h1>
+        <div class="cover-jp-title">雨でも満喫！名古屋日帰り旅しおり</div>
+      </div>
+
+      <!-- リアルタイムカウントダウン付箋 -->
+      <div class="countdown-sticky">
+        <div class="countdown-label">
+          <span>★ COUNTDOWN TO D-DAY</span>
+          <span id="cdStatus">出発まであと…</span>
+        </div>
+        <div class="countdown-grid" id="countdownGrid">
+          <div class="cd-box"><div class="cd-num" id="cdDays">--</div><div class="cd-unit">DAYS</div></div>
+          <div class="cd-box"><div class="cd-num" id="cdHours">--</div><div class="cd-unit">HRS</div></div>
+          <div class="cd-box"><div class="cd-num" id="cdMins">--</div><div class="cd-unit">MIN</div></div>
+          <div class="cd-box"><div class="cd-num" id="cdSecs">--</div><div class="cd-unit">SEC</div></div>
+        </div>
+      </div>
+
+      <!-- 集合メモ -->
+      <div class="meeting-card">
+        <div><strong>👥 メンバー：</strong>あやこ・けいご・だいち・みきゃん</div>
+        <div><strong>🕘 集合：</strong>11月15日(日) <strong>9:00 厳守</strong></div>
+        <div><strong>📍 場所：</strong>JR名古屋駅 桜通口「銀時計」前</div>
+        <div><strong>💡 朝のポイント：</strong>合流したら地下鉄の券売機で「ドニチエコきっぷ」を買ってから出発！</div>
+      </div>
+
+      <div class="swipe-hint" onclick="goToPage(1)">
+        <span>スワイプ または タップでページをめくる</span> ➔
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 2: 1日の行程 ==================== -->
+    <section class="page upcoming" data-page="1">
+      <div class="page-header">
+        <h2 class="page-title-en">TIMELINE</h2>
+        <span class="page-num-pill">PAGE 02 / 03</span>
+      </div>
+
+      <div class="timeline-list">
+        <!-- 09:00 集合 -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">09:00</span>
+            <span class="fee-badge free">きっぷ購入 ¥620</span>
+          </div>
+          <div class="spot-name">名古屋駅 銀時計 集合</div>
+          <div class="spot-memo">合流後、地下鉄の券売機で「ドニチエコきっぷ」を購入！</div>
+          <div class="spot-actions">
+            <span class="spot-tag">🤝 集合スタート</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=名古屋駅+銀時計" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動1 -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚃 地下鉄東山線（高畑行き）＋ 🚶 徒歩</span>
+          </div>
+          <div class="transit-detail">名古屋駅 → 亀島駅下車（約2分）＋ 徒歩約10分（※名古屋駅から徒歩なら約20〜25分）</div>
+        </div>
+
+        <!-- 09:25 モーニング -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">09:25</span>
+          </div>
+          <div class="spot-name">morning cafe again</div>
+          <div class="spot-memo">名古屋モーニングで朝ごはん＆今日の作戦会議！</div>
+          <div class="spot-actions">
+            <span class="spot-tag">☕ モーニング</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=morning+cafe+again+名古屋市中村区大日町" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動2 -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚶 徒歩移動（約12〜15分）</span>
+          </div>
+          <div class="transit-detail">栄生駅方面から線路沿い・ノリタケの森方面へ歩いて移動</div>
+        </div>
+
+        <!-- 10:30 トヨタ産業技術記念館 -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">10:30</span>
+            <span class="fee-badge">入場料 ¥800（割引後）</span>
+          </div>
+          <div class="spot-name">トヨタ産業技術記念館</div>
+          <div class="spot-memo">トヨタグループ発祥の地に建つ、繊維機械と自動車の巨大ミュージアム！ダイナミックな実演展示も見どころで、屋内だから雨でも超快適。（※窓口できっぷ提示で割引）</div>
+          <div class="spot-actions">
+            <span class="spot-tag">🏭 屋内メイン観光</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=トヨタ産業技術記念館" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動3（地下鉄東山線） -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚃 地下鉄東山線（藤が丘行き）：亀島駅 → 伏見駅</span>
+          </div>
+          <div class="transit-detail">記念館から徒歩約10分で「亀島駅」へ → 乗車約4分（2駅）→ 伏見駅下車</div>
+        </div>
+
+        <!-- 13:00 名古屋めしランチ -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">13:00</span>
+          </div>
+          <div class="spot-name">名古屋めし食堂 丸八 伏見別邸</div>
+          <div class="spot-memo">味噌カツ・ひつまぶし・名古屋コーチンなど名物が勢揃い！それぞれ好きなものを自由に選べるよ。</div>
+          <div class="spot-actions">
+            <span class="spot-tag">🍤 名古屋めしランチ</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=名古屋めし食堂+丸八+伏見別邸" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動4（地下鉄鶴舞線） -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚃 地下鉄鶴舞線（赤池・豊田市行き）：伏見駅 → 上前津駅</span>
+          </div>
+          <div class="transit-detail">乗車約3分（2駅）→ 上前津駅下車（8番出口すぐ）</div>
+        </div>
+
+        <!-- 14:30 大須商店街 -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">14:30</span>
+          </div>
+          <div class="spot-name">大須商店街（全天候型アーケード）</div>
+          <div class="spot-memo">屋根付きアーケードだから傘いらず！食べ歩き・古着屋・雑貨・カフェ巡りに加えて、大須の謎解きショップも要チェック！</div>
+          <div class="spot-actions">
+            <span class="spot-tag">🏮 食べ歩き＆謎解き</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=大須商店街" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動5（大須 → 科学館） -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚶 徒歩移動（約10〜12分）</span>
+          </div>
+          <div class="transit-detail">大須商店街の北側（大須観音・仁王門通側）から白川公園方面へ</div>
+        </div>
+
+        <!-- 16:00 名古屋市科学館 -->
+        <div class="spot-card">
+          <div class="spot-top-row">
+            <span class="time-pill">16:00</span>
+            <span class="fee-badge">入場料 ¥360（割引後）</span>
+          </div>
+          <div class="spot-name">名古屋市科学館（白川公園）</div>
+          <div class="spot-memo">巨大な銀色の球体が目印の体験型ミュージアム！（※窓口できっぷ提示で割引／17:00閉館・最終入館16:30）</div>
+          <div class="spot-actions">
+            <span class="spot-tag">🔭 屋内サイエンス</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=名古屋市科学館" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 移動6（帰路） -->
+        <div class="transit-connector">
+          <div class="transit-header">
+            <span>🚃 地下鉄東山線（高畑行き）：伏見駅 → 名古屋駅</span>
+          </div>
+          <div class="transit-detail">科学館から徒歩約5分で「伏見駅」へ → 乗車約3分（1駅）で名古屋駅へ帰着！</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 3: 寄り道・お得情報 ==================== -->
+    <section class="page upcoming" data-page="2">
+      <div class="page-header">
+        <h2 class="page-title-en">INFO &amp; DETOUR</h2>
+        <span class="page-num-pill">PAGE 03 / 03</span>
+      </div>
+
+      <div class="detour-grid">
+        <!-- 晴れプラン変更案（タップで2枚目と同じ行程表が展開） -->
+        <div class="sunny-plan-card" id="sunnyPlanCard">
+          <div class="sunny-toggle-header" onclick="toggleSunnyPlan()">
+            <div class="spot-top-row">
+              <span class="detour-cat" style="background: #ff9f1c; color: #1c2b45;">☀️ 晴れの日プラン変更案</span>
+            </div>
+            <div class="spot-name">名古屋城＆金シャチ横丁ルート</div>
+            <div class="spot-memo">もし当日晴れたら、大須＆伏見ランチをやめてお昼ご飯も<strong>金シャチ横丁</strong>で食べて、そのまま<strong>名古屋城 本丸御殿</strong>を散策するルートに変更もアリ！</div>
+            <div class="spot-actions">
+              <span class="spot-tag" style="background: #fff3bf; color: #8a5a00;">🏯 天気次第でチェンジ！</span>
+              <span class="sunny-toggle-btn" id="sunnyToggleBtn">▼ タップで行程表を開く</span>
+            </div>
+          </div>
+
+          <!-- 展開される晴れの日タイムライン -->
+          <div class="sunny-timeline-drawer">
+            <div class="sunny-timeline-inner">
+              <div class="sunny-timeline-content">
+                <div class="sunny-sub-badge">☀️ トヨタ産業技術記念館のあとの晴れルート</div>
+
+                <div class="timeline-list">
+                  <!-- 12:45 移動（亀島 → 伏見 → 名古屋城） -->
+                  <div class="transit-connector" style="margin-top: 0;">
+                    <div class="transit-header">
+                      <span>12:45 移動：亀島駅 → 伏見駅乗換 → 名古屋城駅</span>
+                    </div>
+                    <div class="transit-detail">🚃 地下鉄東山線（藤が丘行き）→ 伏見駅で地下鉄名城線（右回り）に乗換 → 名古屋城駅下車（7番出口すぐ）</div>
+                  </div>
+
+                  <!-- 13:10 金シャチ横丁 -->
+                  <div class="spot-card">
+                    <div class="spot-top-row">
+                      <span class="time-pill">13:10</span>
+                    </div>
+                    <div class="spot-name">金シャチ横丁（ランチ＆食べ歩き）</div>
+                    <div class="spot-memo">名古屋城のふもとでお昼ご飯＆名古屋めし食べ歩き！味噌カツ・ひつまぶし・名古屋コーチンなど名店が勢揃い。</div>
+                    <div class="spot-actions">
+                      <span class="spot-tag">🍤 城下町ランチ</span>
+                      <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=金シャチ横丁" target="_blank" rel="noopener" onclick="event.stopPropagation()">📍 MAP</a>
+                    </div>
+                  </div>
+
+                  <!-- 移動（徒歩） -->
+                  <div class="transit-connector">
+                    <div class="transit-header">
+                      <span>🚶 徒歩移動（すぐ隣・約3分）</span>
+                    </div>
+                    <div class="transit-detail">正門・東門から名古屋城エリアへ入場</div>
+                  </div>
+
+                  <!-- 14:30 名古屋城 本丸御殿 散策 -->
+                  <div class="spot-card">
+                    <div class="spot-top-row">
+                      <span class="time-pill">14:30</span>
+                      <span class="fee-badge">入場料 ¥400（割引後）</span>
+                    </div>
+                    <div class="spot-name">名古屋城 本丸御殿 散策</div>
+                    <div class="spot-memo">豪華絢爛な本丸御殿や天守閣エリアを青空の下でお散歩！（※窓口できっぷ提示で割引）</div>
+                    <div class="spot-actions">
+                      <span class="spot-tag">🏯 絶景＆歴史散策</span>
+                      <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=名古屋城+本丸御殿" target="_blank" rel="noopener" onclick="event.stopPropagation()">📍 MAP</a>
+                    </div>
+                  </div>
+
+                  <!-- 15:45 移動（名古屋城 → 栄 → 伏見） -->
+                  <div class="transit-connector">
+                    <div class="transit-header">
+                      <span>15:45 移動：名古屋城駅 → 栄駅乗換 → 伏見駅</span>
+                    </div>
+                    <div class="transit-detail">🚃 地下鉄名城線（左回り）→ 栄駅で地下鉄東山線（高畑行き）に乗換 → 伏見駅下車</div>
+                  </div>
+
+                  <!-- 16:00 名古屋市科学館 ＆ 名古屋駅へ帰着 -->
+                  <div class="spot-card">
+                    <div class="spot-top-row">
+                      <span class="time-pill">16:00</span>
+                      <span class="fee-badge">入場料 ¥360（割引後）</span>
+                    </div>
+                    <div class="spot-name">名古屋市科学館 ＆ 名古屋駅へ帰着</div>
+                    <div class="spot-memo">白川公園の科学館で遊んだあと、伏見駅から地下鉄東山線で名古屋駅へ！</div>
+                    <div class="spot-actions">
+                      <span class="spot-tag">🔭 ラスト立ち寄り</span>
+                      <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=名古屋市科学館" target="_blank" rel="noopener" onclick="event.stopPropagation()">📍 MAP</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 大須食べ歩き候補 -->
+        <div class="detour-card">
+          <div class="spot-top-row">
+            <span class="detour-cat cafe">🍡 大須食べ歩き</span>
+          </div>
+          <div class="spot-name">新雀本店 / 李さんの台湾名物屋台</div>
+          <div class="spot-memo">焼きたて香ばしいみたらし団子（新雀本店）や、スパイシーな台湾唐揚げ（李さん）など、屋根の下でサクッと食べ歩き！</div>
+          <div class="spot-actions">
+            <span class="spot-tag">大須食べ歩き定番</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=新雀本店+大須" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+
+        <!-- 謎解きスポット候補 -->
+        <div class="detour-card">
+          <div class="spot-top-row">
+            <span class="detour-cat" style="background: #7b2cbf;">🧩 大須 謎解きショップ</span>
+          </div>
+          <div class="spot-name">タンブルウィード ナゾベース大須店 / SCRAPナゾビル</div>
+          <div class="spot-memo">大須エリアには持ち帰り謎やカフェ感覚で遊べる謎解き専門店が充実！雨の日の室内遊びや、お土産用の謎解きキット探しにもぴったり。</div>
+          <div class="spot-actions">
+            <span class="spot-tag">大須エリア謎解き</span>
+            <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=タンブルウィード+ナゾベース+大須" target="_blank" rel="noopener">📍 MAP</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ドニチエコきっぷ紹介カード（3ページ目の一番下に配置） -->
+      <div class="ticket-promo">
+        <div>
+          <div class="ticket-promo-title">🎫 ドニチエコきっぷ（土日祝限定）</div>
+          <div class="ticket-promo-desc">名古屋市営地下鉄・市バスが1日乗り放題！さらに窓口提示で<strong>トヨタ産業技術記念館</strong>や<strong>名古屋市科学館</strong>などの入場料割引も受けられる超お得きっぷ。</div>
+        </div>
+        <div class="ticket-price-tag">¥620</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 下部ページ切り替えナビゲーション -->
+  <nav class="bottom-nav" aria-label="ページ切り替え">
+    <button class="nav-btn active" data-target="0" onclick="goToPage(0)">📘 表紙</button>
+    <button class="nav-btn" data-target="1" onclick="goToPage(1)">🚃 1日の行程</button>
+    <button class="nav-btn" data-target="2" onclick="goToPage(2)">☕ 寄り道候補</button>
+  </nav>
+
+  <script>
+    // 1. 左端のツインリング綴じ具を生成
+    const ringsContainer = document.getElementById('binderRings');
+    for (let i = 0; i < 16; i++) {
+      const unit = document.createElement('div');
+      unit.className = 'ring-unit';
+      unit.innerHTML = '<div class="ring-hole"></div><div class="ring-wire"></div>';
+      ringsContainer.appendChild(unit);
+    }
+
+    // 2. 3Dページめくり制御（ボタン＆左右スワイプ対応）
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.page');
+    const navBtns = document.querySelectorAll('.nav-btn');
+
+    function goToPage(index) {
+      if (index < 0 || index >= pages.length) return;
+      currentPage = index;
+
+      pages.forEach((page, i) => {
+        page.classList.remove('active', 'flipped', 'upcoming');
+        if (i < currentPage) {
+          page.classList.add('flipped');
+        } else if (i === currentPage) {
+          page.classList.add('active');
+          page.scrollTop = 0;
+        } else {
+          page.classList.add('upcoming');
+        }
+      });
+
+      navBtns.forEach((btn, i) => {
+        btn.classList.toggle('active', i === currentPage);
+      });
+    }
+
+    // 3. 晴れの日プランアコーディオン開閉
+    function toggleSunnyPlan() {
+      const card = document.getElementById('sunnyPlanCard');
+      const btn = document.getElementById('sunnyToggleBtn');
+      const isOpen = card.classList.toggle('open');
+      btn.textContent = isOpen ? '▲ 閉じる' : '▼ タップで行程表を開く';
+    }
+
+    // スマホの左右スワイプ検出
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const notebook = document.getElementById('notebook');
+
+    notebook.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    notebook.addEventListener('touchend', (e) => {
+      const diffX = e.changedTouches[0].screenX - touchStartX;
+      const diffY = e.changedTouches[0].screenY - touchStartY;
+
+      if (Math.abs(diffX) > 55 && Math.abs(diffX) > Math.abs(diffY) * 1.4) {
+        if (diffX < 0 && currentPage < pages.length - 1) {
+          goToPage(currentPage + 1);
+        } else if (diffX > 0 && currentPage > 0) {
+          goToPage(currentPage - 1);
+        }
+      }
+    }, { passive: true });
+
+    // 4. 出発日（2026年11月15日 09:00 JST）リアルタイムカウントダウン
+    const targetDate = new Date('2026-11-15T09:00:00+09:00').getTime();
+
+    function updateCountdown() {
+      const now = Date.now();
+      const diff = targetDate - now;
+
+      const statusEl = document.getElementById('cdStatus');
+      const gridEl = document.getElementById('countdownGrid');
+
+      if (diff <= 0) {
+        const endOfDay = new Date('2026-11-15T23:59:59+09:00').getTime();
+        if (now <= endOfDay) {
+          statusEl.textContent = '🎉 TODAY IS THE DAY!';
+          gridEl.innerHTML = '<div style="grid-column: 1 / -1; font-family: Fredoka, sans-serif; font-size: 18px; color: #1d63dc; padding: 6px 0;">ENJOY NAGOYA TRIP 24/7!</div>';
+        } else {
+          statusEl.textContent = '✨ TRIP COMPLETED';
+          gridEl.innerHTML = '<div style="grid-column: 1 / -1; font-size: 13px; font-weight: 800; color: #1c2b45; padding: 6px 0;">最高の名古屋日帰り旅の思い出！</div>';
+        }
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
+      document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cdMins').textContent = String(mins).padStart(2, '0');
+      document.getElementById('cdSecs').textContent = String(secs).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
